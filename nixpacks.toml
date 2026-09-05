@@ -1,0 +1,41 @@
+# =============================================================================
+# Railway deployment configuration for ANISYNC
+# =============================================================================
+#
+# Railway is a full PaaS like Render but does NOT require a credit card.
+# Sign up with GitHub at https://railway.app
+#
+# Free tier:
+#   • $5 USD of usage credit per month (roughly 500 execution hours for a
+#     small Node service, or ~50K requests)
+#   • When the credit runs out, the service pauses until next month
+#   • No sleep/wake cycle — service stays running until credit is exhausted
+#   • 512MB RAM, 1 vCPU
+#
+# Trade-offs vs Render free tier:
+#   + No credit card required
+#   + No 15-min sleep (Render sleeps after inactivity)
+#   + No 10s function timeout (Render/Netlify functions have this)
+#   - Hard usage cap ($5/month) vs Render's unlimited hours
+#   - Once the $5 runs out, service pauses until next month
+#
+# Setup:
+#   1. Push this repo to GitHub
+#   2. Go to https://railway.app → "New Project" → "Deploy from GitHub repo"
+#   3. Pick your repo — Railway auto-detects this railway.toml (or nixpacks.toml)
+#   4. Add environment variables (Railway UI → Variables tab):
+#        GEMINI_API_KEY = your-key (optional — app works without it)
+#        FIREBASE_SERVICE_ACCOUNT = JSON string (optional — see .env.render)
+#   5. Railway auto-deploys. Your URL will be <service-name>.up.railway.app
+#   6. Add that URL to Firebase Authorized Domains
+# =============================================================================
+
+[deploy]
+  # Railway uses Nixpacks to auto-detect Node apps. This config tells it:
+  #   - Install deps + build the production bundle
+  #   - Start the Express server (runs the full API + serves static dist/)
+  startCommand = "npm run start"
+  healthcheckPath = "/"
+  healthcheckTimeout = 60
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 3

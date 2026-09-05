@@ -1,0 +1,53 @@
+# =============================================================================
+# Render deployment configuration for ANISYNC
+# =============================================================================
+#
+# THE RECOMMENDED NO-CARD HOST (August 2026 — Back4App keeps failing).
+#
+# Render Free:
+#   ✅ No credit card required — https://dashboard.render.com → sign up with GitHub
+#   ✅ Free forever (750 instance-hours/mo = 1 always-on service)
+#   ✅ 512MB RAM, 0.1 vCPU (more RAM than Back4App's 256MB)
+#   ✅ Native Node runtime — runs dist/server.cjs directly (no Docker needed)
+#   ✅ firebase-admin + cheerio + iconv-lite all work
+#   ✅ Auto-deploys from GitHub on every push
+#   ⚠️ Sleeps after 15 min inactivity → ~30s cold start on next request
+#      (Fix: set up a free cron-job.org pinger hitting /health every 10 min)
+#
+# Setup (full guide in deploy/README.md):
+#   1. Push this repo to GitHub (dist/ MUST be committed)
+#   2. Go to https://dashboard.render.com → Sign up with GitHub (NO card)
+#   3. New → Web Service → connect your GitHub repo
+#   4. Render auto-detects this render.yaml — confirm settings
+#   5. Add env vars (Render UI → Environment):
+#        GEMINI_API_KEY            = your Gemini key
+#        FIREBASE_SERVICE_ACCOUNT  = JSON string of your Firebase service account
+#        LASTFM_API_KEY            = your Last.fm key (optional)
+#        GEMINI_MODEL              = gemini-2.5-flash
+#   6. Deploy → get https://anisync.onrender.com
+#   7. Add that URL to Firebase Authorized Domains
+#   8. (Optional) Set up cron-job.org pinger to eliminate cold starts
+# =============================================================================
+
+services:
+  - type: web
+    name: anisync
+    runtime: node
+    plan: free
+    # dist/ is pre-built and committed to the repo, so we just need production deps.
+    # No build step needed — faster deploys, no OOM risk.
+    buildCommand: npm install --omit=dev
+    startCommand: node dist/server.cjs
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.0.0
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      # Set these in Render UI → Environment (don't commit secrets):
+      #   GEMINI_API_KEY            (required)
+      #   FIREBASE_SERVICE_ACCOUNT  (required — JSON string)
+      #   LASTFM_API_KEY            (optional)

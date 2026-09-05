@@ -1,0 +1,84 @@
+# =============================================================================
+# Netlify deployment configuration for ANISYNC
+# =============================================================================
+#
+# THE NO-CARD SOLUTION (August 2026):
+#   ✅ No credit card required — https://app.netlify.com → sign up with GitHub
+#   ✅ Free forever (125K function calls/mo, 100GB bandwidth)
+#   ✅ React SPA served from global CDN
+#   ✅ Express API runs as serverless function (serverless-http wrapper)
+#   ✅ firebase-admin + cheerio + Gemini all work
+#   ✅ Commercial use allowed (unlike Vercel Hobby)
+#
+# Architecture:
+#   - Static SPA (dist/) → Netlify CDN (global, unlimited)
+#   - API (/api/*) → serverless function (10s timeout per request)
+#   - Heavy scraping (VGMdb/AniDB/bulk-import) → run locally with `npm start`
+#
+# Limitations:
+#   ⚠️ 10s function timeout — heavy scraping endpoints will timeout
+#      Fix: run `npm start` locally for admin bulk operations
+#   ⚠️ Cold start: 1-3s after 15 min idle
+#      Fix: set up free UptimeRobot pinger on /api/health
+#
+# Setup (full guide in deploy/README.md):
+#   1. Push this repo to GitHub
+#   2. https://app.netlify.com → Sign up with GitHub (NO card)
+#   3. Add new site → import from GitHub → pick your repo
+#   4. Build settings auto-detected from this file
+#   5. Set env vars (Netlify UI → Site settings → Environment variables):
+#        GEMINI_API_KEY            = your Gemini key
+#        FIREBASE_SERVICE_ACCOUNT  = JSON string of your Firebase service account
+#        GEMINI_MODEL              = gemini-2.5-flash
+#        LASTFM_API_KEY            = your Last.fm key (optional)
+#   6. Deploy → get https://anisync.netlify.app
+#   7. Add that URL to Firebase Authorized Domains
+#   8. (Optional) Set up UptimeRobot pinger to eliminate cold starts
+# =============================================================================
+
+[build]
+  # Build the SPA + server bundle. Netlify publishes dist/ as static files.
+  command = "npm run build"
+  publish = "dist"
+  # Node 22 (Node 20 is EOL April 2026)
+  node_version = "22"
+
+[functions]
+  # Function source directory
+  directory = "netlify/functions"
+  # Use esbuild for fast bundling + Tree-shaking
+  node_bundler = "esbuild"
+
+# ---------------------------------------------------------------------------
+# Redirects: route /api/* to the serverless function, everything else to SPA
+# ---------------------------------------------------------------------------
+
+# API requests → serverless function (status 200 = rewrite, not redirect)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+# SPA fallback: any path that doesn't match a static file → index.html
+# (React Router handles client-side routing)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ---------------------------------------------------------------------------
+# Headers: security + caching
+# ---------------------------------------------------------------------------
+
+# Hashed assets (JS/CSS bundles) — cache forever
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML — don't cache (always fetch latest)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"

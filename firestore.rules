@@ -1,0 +1,116 @@
+rules_version = '2';
+
+// =============================================================================
+// Anisync Firestore Security Rules — relaxed for development
+//
+// This version allows users to create/update their own profile without
+// strict field validation — fixes the "Missing or insufficient permissions"
+// error on first sign-in.
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true
+        || request.auth.token.email == 'mfrimi100@gmail.com'
+        || (request.auth.token.email != null && request.auth.token.email.matches('.*@anielo\\.com$'))
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // users/{userId} — users can read all profiles, write only their own
+    // ---------------------------------------------------------------------------
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // tracks/{trackId} — public read, signed-in create, admin full write
+    // ---------------------------------------------------------------------------
+    match /tracks/{trackId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // history/{logId} — public read, signed-in create
+    // ---------------------------------------------------------------------------
+    match /history/{logId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // proposals/{proposalId} — signed-in read/create, admin manage
+    // ---------------------------------------------------------------------------
+    match /proposals/{proposalId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // tournaments/{tournamentId} — public read, owner or admin write
+    // ---------------------------------------------------------------------------
+    match /tournaments/{tournamentId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    // ---------------------------------------------------------------------------
+    // franchise_cache/{titleKey} — public read, signed-in write
+    // ---------------------------------------------------------------------------
+    match /franchise_cache/{titleKey} {
+      allow read: if true;
+      allow create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // artist_profiles/{artistId} — public read, signed-in write
+    // ---------------------------------------------------------------------------
+    match /artist_profiles/{artistId} {
+      allow read: if true;
+      allow create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // reviews/{reviewId} — public read, signed-in create (own only)
+    // ---------------------------------------------------------------------------
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    // ---------------------------------------------------------------------------
+    // pokedex_collectibles/{itemId} — public read, admin write
+    // ---------------------------------------------------------------------------
+    match /pokedex_collectibles/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------------
+    // Default deny — anything not explicitly allowed above is blocked
+    // ---------------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

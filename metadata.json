@@ -1,0 +1,6 @@
+{
+  "name": "ANISYNC",
+  "description": "The ultimate anime music synchronization and ranking hub. Rate, rank, and discover anime themes through Elo matchmaking and collaborative tournaments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

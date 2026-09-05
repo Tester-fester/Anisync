@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport-fit=cover unlocks iOS safe-area-inset-* CSS env vars used by
+         .pb-safe / .pt-safe (mobile bottom nav, modals). Without it the home
+         indicator overlaps the nav bar on iPhone X+ devices. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Theme color drives Safari mobile chrome + Android address bar color.
+         Matches the deep slate-black body background so the transition from
+         OS chrome → app is seamless. -->
+    <meta name="theme-color" content="#070c14" />
+    <meta name="color-scheme" content="dark" />
+    <!-- PWA-style meta so the app feels native when added to iOS home screen. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ANISYNC" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- Prevent iOS auto-zoom on input focus: inputs are already ≥16px. -->
+    <meta name="description" content="Discover, rank, and collect amazing anime theme music in a dynamic leaderboard and rating arena." />
+    <title>ANISYNC | Anime Theme Ranking Engine</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://anisync.app/" />
+    <meta property="og:title" content="ANISYNC | Anime Theme Ranking Engine" />
+    <meta property="og:description" content="Discover, rank, and collect amazing anime theme music in a dynamic leaderboard and rating arena." />
+    <meta property="og:image" content="/share-card.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://anisync.app/" />
+    <meta property="twitter:title" content="ANISYNC | Anime Theme Ranking Engine" />
+    <meta property="twitter:description" content="Discover, rank, and collect amazing anime theme music in a dynamic leaderboard and rating arena." />
+    <meta property="twitter:image" content="/share-card.jpg" />
+
+    <!-- Privacy-first analytics -->
+    <script defer data-domain="anisonelo.com" src="https://plausible.io/js/script.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

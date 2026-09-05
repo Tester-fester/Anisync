@@ -1,0 +1,209 @@
+{
+  "entities": {
+    "Track": {
+      "title": "AnimeTrack",
+      "description": "An anime opening, ending, or OST track with dynamic Elo ratings.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the track."
+        },
+        "title": {
+          "type": "string",
+          "description": "Song title."
+        },
+        "artist": {
+          "type": "string",
+          "description": "Performer or artist name."
+        },
+        "animeName": {
+          "type": "string",
+          "description": "Associated Anime title."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["OP", "ED", "OST"],
+          "description": "Track division category."
+        },
+        "youtubeId": {
+          "type": "string",
+          "description": "Target video YouTube watch ID."
+        },
+        "elo": {
+          "type": "integer",
+          "description": "Skill rating index."
+        },
+        "matchesPlayed": {
+          "type": "integer",
+          "description": "Aggregated matches played."
+        },
+        "wins": {
+          "type": "integer",
+          "description": "Wins count."
+        },
+        "losses": {
+          "type": "integer",
+          "description": "Losses count."
+        },
+        "draws": {
+          "type": "integer",
+          "description": "Draws count."
+        },
+        "addedByUser": {
+          "type": "boolean",
+          "description": "Created by custom contributor."
+        }
+      },
+      "required": ["id", "title", "artist", "animeName", "type", "youtubeId", "elo", "matchesPlayed", "wins", "losses", "draws"]
+    },
+    "Proposal": {
+      "title": "ContributionProposal",
+      "description": "User submit proposals for review by system administrators.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["add_track", "fix_link"]
+        },
+        "submittedBy": {
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "trackData": {
+          "type": "object"
+        },
+        "oldTrackId": {
+          "type": "string"
+        },
+        "proposedYtId": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "type", "submittedBy", "submittedAt", "status", "trackData"]
+    },
+    "History": {
+      "title": "HistoryItem",
+      "description": "Global records logs of 1v1 votes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "trackA": {
+          "type": "object"
+        },
+        "trackB": {
+          "type": "object"
+        },
+        "winnerId": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["arena", "tournament"]
+        }
+      },
+      "required": ["id", "timestamp", "trackA", "trackB", "winnerId", "source"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with roles and favorite tracks",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "favorites": { "type": "array" }
+      },
+      "required": ["email", "role"]
+    },
+    "ArtistProfile": {
+      "title": "ArtistProfile",
+      "description": "Biography and details of anime music performers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "artistName": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "bio": { "type": "string" },
+        "birthday": { "type": "string" },
+        "website": { "type": "string" },
+        "malUrl": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "artistName", "updatedAt"]
+    },
+    "FranchiseCache": {
+      "title": "FranchiseCache",
+      "description": "Information and details of anime franchises.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "updatedAt"]
+    },
+    "TrackReview": {
+      "title": "TrackReview",
+      "description": "User comments and ratings for tracks.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "trackId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userAvatar": { "type": "string" },
+        "content": { "type": "string" },
+        "rating": { "type": "integer" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "trackId", "userId", "content", "rating", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Store of user profiles."
+    },
+    "/tracks/{trackId}": {
+      "schema": "Track",
+      "description": "Store of global anime theme soundtrack leaderboards."
+    },
+    "/proposals/{proposalId}": {
+      "schema": "Proposal",
+      "description": "Store of user contribution and link fixing proposals."
+    },
+    "/history/{historyId}": {
+      "schema": "History",
+      "description": "Aggregate log of finished matchup voting histories."
+    },
+    "/artist_profiles/{artistId}": {
+      "schema": "ArtistProfile",
+      "description": "Details of performer biographies."
+    },
+    "/franchise_cache/{titleKey}": {
+      "schema": "FranchiseCache",
+      "description": "Cached details of anime soundtrack franchises."
+    },
+    "/reviews/{reviewId}": {
+      "schema": "TrackReview",
+      "description": "Durable feedback comments and user rating scores."
+    }
+  }
+}

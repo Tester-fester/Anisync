@@ -1,0 +1,1012 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Shippori+Mincho+B1:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* ============================================================================
+   ANISYNC — "SHONEN PRESS" DESIGN SYSTEM
+   Palette: vermillion torii red + washi paper cream + ink-deep black +
+            aged gold leaf + natural indigo + moss + deep rose.
+   Inspiration: manga cover plates, ukiyo-e woodblock prints, vinyl record
+                labels, torii gates. Deliberately NOT the AI-default
+                indigo→violet→pink gradient stack.
+   Typography: Bebas Neue (display) + Shippori Mincho B1 (Japanese serif
+               headings — on-theme for an anime site) + Sora (body — NOT
+               Inter) + JetBrains Mono.
+   Anti-AI-tell policy: no glassmorphism, no gradient-clipped headlines,
+                        no aurora/mesh bg, no decorative pulse/glow, no
+                        reflexive hover:scale-105, no colored glow shadows.
+   ============================================================================ */
+
+@theme {
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Bebas Neue", "Inter Impact", sans-serif;
+  --font-heading: "Shippori Mincho B1", "Noto Serif JP", serif;
+
+  /* ---- Brand palette: Shonen Press ---- */
+  --color-brand-primary: #FF3D2E;        /* torii vermillion — action red */
+  --color-brand-primary-hover: #D0220F; /* deeper vermillion */
+  --color-brand-secondary: #3DDC84;     /* victory green — success/positive */
+  --color-brand-secondary-hover: #2BAE68;
+
+  /* ---- Warm-tinted dark surface stack (NOT cool zinc) ---- */
+  --color-ink-deep: #100C0A;           /* page bg, warm near-black (alias of surface-base) */
+  --color-ink: #221B13;               /* secondary bg (alias of surface-card) */
+  --color-ink-elevated: #2B2319;       /* elevated surface (alias of surface-elevated) */
+  --color-surface-base: #100C0A;        /* page bg, warm near-black */
+  --color-surface-card: #221B13;        /* panel color — cards, tab bar */
+  --color-surface-elevated: #2B2319;    /* hover states, nested cards */
+
+  /* ---- Paper-cream surface (creates real contrast vs dark) ---- */
+  --color-paper: #F4ECDB;               /* washi cream — card surface */
+  --color-paper-dim: #E5DAC4;           /* secondary cream surface */
+  --color-paper-edge: #D8CDB4;          /* paper border */
+
+  /* ---- Accents — Neo-Shonen Arcade (high-dopamine, saturated) ----
+     Research basis: saturation+brightness correlate with arousal (game
+     studies); red = highest arousal hue; gold = conditioned reward color;
+     green/blue/purple = conditioned rarity ladder. Dark ink base keeps
+     long-session comfort while accents carry the energy. */
+  --color-vermillion: #FF3D2E;           /* action red — A-side, max arousal */
+  --color-vermillion-hover: #D0220F;
+  --color-vermillion-tint: #FFD1CC;       /* readable light coral */
+  --color-indigo-ink: #1B2E4A;           /* natural Japanese indigo (bg tone) */
+  --color-indigo-bright: #3FA9F5;        /* arcade azure — battle side B */
+  --color-gold: #FFB800;                 /* championship gold — rewards, currency */
+  --color-gold-bright: #FFD34D;          /* flash gold — emphasis, rarity cap */
+  --color-burnt: #FF8A3D;                /* sunset orange — hype tier, warning */
+  --color-rose-deep: #C81E55;            /* vivid rose — danger, urgency */
+  --color-moss: #3DDC84;                 /* victory green — success (alias of brand-secondary) */
+  --color-hype: #FF5C8A;                 /* hype pink — streaks, combos, love */
+  --color-legendary: #9D6BFF;            /* legendary purple — epic rarity */
+
+  /* ---- Semantic intent colors (mapped onto the palette above) ---- */
+  --color-success: #3DDC84;
+  --color-success-soft: #2BAE68;
+  --color-danger: #C81E55;
+  --color-danger-soft: #96153E;
+  --color-info: #1B2E4A;
+  --color-warning: #FF8A3D;
+
+  /* ---- Legacy aliases kept for back-compat with existing JSX ---- */
+  --color-panel-bg: #221B13;
+  --color-panel-border: #3A2F21;
+  --color-accent-warm: #FFB800;
+  --color-accent-warm-hover: #D99E00;
+  --color-accent-star: #FFD34D;
+
+  /* ---- Text tokens — high contrast (NOT medium-grey AI default) ---- */
+  --color-text-primary: #F4ECDB;       /* cream on dark — primary text */
+  --color-text-secondary: #C9BC9C;     /* warm secondary on dark — brightened */
+  --color-text-muted: #9C9078;        /* warm meta on dark — brightened */
+  --color-text-on-paper: #1A1410;     /* ink on cream — primary */
+  --color-text-muted-on-paper: #5C4F3D;
+
+  /* ---- Border tokens ---- */
+  --color-border-subtle: #3A2F21;      /* subtle warm border on dark — more visible */
+  --color-border-strong: #5C4A38;      /* stronger warm border on dark — more visible */
+
+  /* ============================================================================
+     TAILWIND DEFAULT-COLOR OVERRIDES
+     -----------------------------------------------------------------------------
+     Tailwind v4 generates `bg-*`, `text-*`, `border-*` utilities from every
+     `--color-*` token in @theme. By overriding Tailwind's default palette
+     tokens (zinc, slate, amber, rose, cyan, emerald, etc.) to map onto the
+     Shonen Press palette, EVERY existing JSX usage like `text-zinc-400`,
+     `bg-zinc-900`, `text-amber-400`, `text-cyan-400`, `text-rose-500`,
+     `text-emerald-500`, `bg-slate-900`, etc. automatically resolves to the
+     warm vermillion/ink/paper/gold palette. This is the single biggest fix
+     for "the color scheme still isn't there" — no JSX sweep required.
+     ============================================================================ */
+
+  /* ---- zinc → warm ink/muted stack (kills the cool-grey perma-dark AI tell) ---- */
+  --color-zinc-50:  #F4ECDB;            /* paper cream */
+  --color-zinc-100: #E5DAC4;            /* paper dim */
+  --color-zinc-200: #D8CDB4;            /* paper edge — brightened */
+  --color-zinc-300: #C9BC9C;            /* text-secondary — brightened (was too muddy) */
+  --color-zinc-400: #B5A88C;            /* secondary text — brightened */
+  --color-zinc-500: #9C9078;            /* text-muted — brightened */
+  --color-zinc-600: #7C7059;            /* dim warm meta — brightened */
+  --color-zinc-700: #5C4A38;            /* border-strong — more visible */
+  --color-zinc-800: #3A2F21;            /* border-subtle — more visible */
+  --color-zinc-900: #221B13;            /* surface-card — lifted for bg separation */
+  --color-zinc-950: #100C0A;            /* ink-deep — page bg stays dark */
+
+  /* ---- slate → warm ink stack (same as zinc, kills cool slate dark) ---- */
+  --color-slate-50:  #F4ECDB;
+  --color-slate-100: #E5DAC4;
+  --color-slate-200: #D8CDB4;
+  --color-slate-300: #C9BC9C;
+  --color-slate-400: #B5A88C;
+  --color-slate-500: #9C9078;
+  --color-slate-600: #7C7059;
+  --color-slate-700: #5C4A38;
+  --color-slate-800: #3A2F21;
+  --color-slate-900: #221B13;
+  --color-slate-950: #100C0A;
+
+  /* ---- neutral → keep pure greys UNCHANGED (used for true whites/blacks) ---- */
+  /* No override — Tailwind's neutral-50/950 are the right pure white/black. */
+
+  /* ---- gray → warm stack too (alias of zinc behavior) ---- */
+  --color-gray-50:  #F4ECDB;
+  --color-gray-100: #E5DAC4;
+  --color-gray-200: #C9BBA0;
+  --color-gray-300: #B5A789;
+  --color-gray-400: #A89878;
+  --color-gray-500: #8A7E68;
+  --color-gray-600: #6A5E48;
+  --color-gray-700: #4A3A2C;
+  --color-gray-800: #2A2218;
+  --color-gray-900: #1A1410;
+  --color-gray-950: #100C0A;
+
+  /* ---- amber → gold/burnt (kills AI-default amber-on-everything) ---- */
+  --color-amber-50:  #FBF3DC;
+  --color-amber-100: #F5E8B8;
+  --color-amber-200: #EFD98C;
+  --color-amber-300: #FFD34D;            /* gold-bright */
+  --color-amber-400: #D6A53A;
+  --color-amber-500: #FFB800;            /* gold */
+  --color-amber-600: #FF8A3D;            /* burnt */
+  --color-amber-700: #9A4622;
+  --color-amber-800: #7A3819;
+  --color-amber-900: #5C2A12;
+
+  /* ---- yellow → gold-bright stack ---- */
+  --color-yellow-50:  #FBF3DC;
+  --color-yellow-100: #F5E8B8;
+  --color-yellow-200: #EFD98C;
+  --color-yellow-300: #FFD34D;
+  --color-yellow-400: #D6A53A;
+  --color-yellow-500: #FFB800;
+  --color-yellow-600: #A87C12;
+  --color-yellow-700: #8A6A12;
+  --color-yellow-800: #6E540E;
+  --color-yellow-900: #4F3C0A;
+
+  /* ---- orange → burnt stack ---- */
+  --color-orange-50:  #F9E2D4;
+  --color-orange-100: #F2C6A4;
+  --color-orange-200: #E5A574;
+  --color-orange-300: #D88554;
+  --color-orange-400: #C2653B;
+  --color-orange-500: #FF8A3D;            /* burnt */
+  --color-orange-600: #9A4622;
+  --color-orange-700: #7A3819;
+  --color-orange-800: #5C2A12;
+  --color-orange-900: #3E1C0C;
+
+  /* ---- rose → deep rose (kills AI-default bright pink rose) ---- */
+  --color-rose-50:  #FFD1CC;
+  --color-rose-100: #E5A29D;
+  --color-rose-200: #D67E76;
+  --color-rose-300: #B8554A;
+  --color-rose-400: #A03930;
+  --color-rose-500: #C81E55;              /* rose-deep */
+  --color-rose-600: #96153E;
+  --color-rose-700: #4F1320;
+  --color-rose-800: #380F1A;
+  --color-rose-900: #240A11;
+
+  /* ---- red → deep rose (kept for "danger" semantic) ---- */
+  --color-red-50:  #FFD1CC;
+  --color-red-100: #E5A29D;
+  --color-red-200: #D67E76;
+  --color-red-300: #B8554A;
+  --color-red-400: #A03930;
+  --color-red-500: #C81E55;
+  --color-red-600: #96153E;
+  --color-red-700: #4F1320;
+  --color-red-800: #380F1A;
+  --color-red-900: #240A11;
+
+  /* ---- pink → rose-deep (kills AI-default hot pink) ---- */
+  --color-pink-50:  #FFD1CC;
+  --color-pink-100: #E5A29D;
+  --color-pink-200: #D67E76;
+  --color-pink-300: #B8554A;
+  --color-pink-400: #A03930;
+  --color-pink-500: #C81E55;
+  --color-pink-600: #96153E;
+  --color-pink-700: #4F1320;
+  --color-pink-800: #380F1A;
+  --color-pink-900: #240A11;
+
+  /* ---- cyan → vermillion (kills AI-default cyan brand) ---- */
+  --color-cyan-50:  #FAE3E1;
+  --color-cyan-100: #F5C9C5;
+  --color-cyan-200: #ECA89F;
+  --color-cyan-300: #E0877A;
+  --color-cyan-400: #D4594A;
+  --color-cyan-500: #FF3D2E;              /* vermillion */
+  --color-cyan-600: #D0220F;              /* vermillion-hover */
+  --color-cyan-700: #7E1810;
+  --color-cyan-800: #5A0F08;
+  --color-cyan-900: #3A0805;
+
+  /* ---- blue → indigo-ink (kills AI-default cool blue brand) ---- */
+  --color-blue-50:  #DDE5F0;
+  --color-blue-100: #B5C4DC;
+  --color-blue-200: #8AA3C8;
+  --color-blue-300: #5E81AE;
+  --color-blue-400: #3F628F;
+  --color-blue-500: #1B2E4A;              /* indigo-ink */
+  --color-blue-600: #16243B;
+  --color-blue-700: #111A2C;
+  --color-blue-800: #0C111E;
+  --color-blue-900: #070912;
+
+  /* ---- indigo → indigo-ink (kills AI-default indigo→violet gradient) ---- */
+  --color-indigo-50:  #DDE5F0;
+  --color-indigo-100: #B5C4DC;
+  --color-indigo-200: #8AA3C8;
+  --color-indigo-300: #5E81AE;
+  --color-indigo-400: #3F628F;
+  --color-indigo-500: #1B2E4A;            /* indigo-ink */
+  --color-indigo-600: #16243B;
+  --color-indigo-700: #111A2C;
+  --color-indigo-800: #0C111E;
+  --color-indigo-900: #070912;
+
+  /* ---- violet → indigo-ink (kills AI-default violet gradient stop) ---- */
+  --color-violet-50:  #DDE5F0;
+  --color-violet-100: #B5C4DC;
+  --color-violet-200: #8AA3C8;
+  --color-violet-300: #5E81AE;
+  --color-violet-400: #3F628F;
+  --color-violet-500: #1B2E4A;
+  --color-violet-600: #16243B;
+  --color-violet-700: #111A2C;
+  --color-violet-800: #0C111E;
+  --color-violet-900: #070912;
+
+  /* ---- purple → vermillion-hover (kills AI-default purple gradient stop) ---- */
+  --color-purple-50:  #FAE3E1;
+  --color-purple-100: #F5C9C5;
+  --color-purple-200: #ECA89F;
+  --color-purple-300: #E0877A;
+  --color-purple-400: #D4594A;
+  --color-purple-500: #D0220F;            /* vermillion-hover */
+  --color-purple-600: #7E1810;
+  --color-purple-700: #5A0F08;
+  --color-purple-800: #3A0805;
+  --color-purple-900: #1F0403;
+
+  /* ---- fuchsia → vermillion (kills AI-default fuchsia gradient stop) ---- */
+  --color-fuchsia-50:  #FAE3E1;
+  --color-fuchsia-100: #F5C9C5;
+  --color-fuchsia-200: #ECA89F;
+  --color-fuchsia-300: #E0877A;
+  --color-fuchsia-400: #D4594A;
+  --color-fuchsia-500: #FF3D2E;            /* vermillion */
+  --color-fuchsia-600: #D0220F;
+  --color-fuchsia-700: #7E1810;
+  --color-fuchsia-800: #5A0F08;
+  --color-fuchsia-900: #3A0805;
+
+  /* ---- emerald → moss (kills AI-default emerald success) ---- */
+  --color-emerald-50:  #E5E8DC;
+  --color-emerald-100: #C5CDB4;
+  --color-emerald-200: #9FAB8B;
+  --color-emerald-300: #7A8A65;
+  --color-emerald-400: #6B7B56;
+  --color-emerald-500: #3DDC84;            /* moss */
+  --color-emerald-600: #2BAE68;
+  --color-emerald-700: #3A512B;
+  --color-emerald-800: #2A3B1F;
+  --color-emerald-900: #1B260F;
+
+  /* ---- green → moss (kills AI-default green success) ---- */
+  --color-green-50:  #E5E8DC;
+  --color-green-100: #C5CDB4;
+  --color-green-200: #9FAB8B;
+  --color-green-300: #7A8A65;
+  --color-green-400: #6B7B56;
+  --color-green-500: #3DDC84;
+  --color-green-600: #2BAE68;
+  --color-green-700: #3A512B;
+  --color-green-800: #2A3B1F;
+  --color-green-900: #1B260F;
+
+  /* ---- lime → moss (kills AI-default lime success) ---- */
+  --color-lime-50:  #E5E8DC;
+  --color-lime-100: #C5CDB4;
+  --color-lime-200: #9FAB8B;
+  --color-lime-300: #7A8A65;
+  --color-lime-400: #6B7B56;
+  --color-lime-500: #3DDC84;
+  --color-lime-600: #2BAE68;
+  --color-lime-700: #3A512B;
+  --color-lime-800: #2A3B1F;
+  --color-lime-900: #1B260F;
+
+  /* ---- teal → moss/indigo blend ---- */
+  --color-teal-50:  #DDE2DC;
+  --color-teal-100: #B5C0B4;
+  --color-teal-200: #8A9A8B;
+  --color-teal-300: #5E7565;
+  --color-teal-400: #3F5546;
+  --color-teal-500: #2A4538;
+  --color-teal-600: #1B2E4A;              /* indigo-ink (for cooler teal-ish) */
+  --color-teal-700: #16243B;
+  --color-teal-800: #0C111E;
+  --color-teal-900: #070912;
+
+  /* ---- sky → indigo-ink (kills AI-default sky/blue brand) ---- */
+  --color-sky-50:  #DDE5F0;
+  --color-sky-100: #B5C4DC;
+  --color-sky-200: #8AA3C8;
+  --color-sky-300: #5E81AE;
+  --color-sky-400: #3F628F;
+  --color-sky-500: #1B2E4A;
+  --color-sky-600: #16243B;
+  --color-sky-700: #111A2C;
+  --color-sky-800: #0C111E;
+  --color-sky-900: #070912;
+
+  /* Type scale — ban raw text-[Npx] arbitrary values below --text-label. */
+  --text-micro: 11px;
+  --text-label: 12px;
+  --text-body: 14px;
+  --text-h4: 16px;
+  --text-h3: 18px;
+  --text-h2: 22px;
+  --text-h1: 28px;
+  --text-display: 36px;
+}
+
+/* ============================================================================
+   BASE RESETS
+   ============================================================================ */
+html, body {
+  overscroll-behavior-y: none;
+}
+body {
+  background-color: #100C0A;          /* warm ink-deep */
+  color: #F4ECDB;                     /* cream text — high contrast */
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+button, a, [role="button"], input[type="submit"], input[type="button"], label[for] {
+  touch-action: manipulation;
+}
+
+input, textarea, select {
+  font-size: 16px;
+}
+@media (min-width: 640px) {
+  input, textarea, select {
+    font-size: inherit;
+  }
+}
+
+/* ============================================================================
+   TYPOGRAPHY UTILITIES
+   .font-display  — Bebas Neue, condensed bold, for big impact numbers,
+                    "VS" knot, hero scores, round labels. Opt-in per element.
+   .font-heading  — Shippori Mincho B1, Japanese serif for headings.
+                    Use on H1/H2/page titles to give the app a manga-cover feel.
+   ============================================================================ */
+.font-display {
+  font-family: var(--font-display), "Bebas Neue", sans-serif;
+  font-weight: 400;                   /* Bebas Neue ships single-weight */
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+
+.font-heading {
+  font-family: var(--font-heading), "Shippori Mincho B1", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================================
+   FOCUS & ACCESSIBILITY
+   ============================================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-vermillion);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* iOS safe-area utilities — used by mobile bottom nav and fixed footers. */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+.pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+.bottom-safe { bottom: env(safe-area-inset-bottom, 0px); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================================
+   TACTILE DUOLINGO-STYLE BUTTONS
+   These have real "press" feedback (translateY + shadow collapse) which is
+   *purposeful* motion — a button press state change, not decoration.
+   Palette: vermillion primary / moss success / rose-deep danger / burnt
+            warning / gold-bright victory / ink-elevated neutral.
+   ============================================================================ */
+.btn-tactile-primary {
+  @apply bg-brand-primary text-neutral-50 font-black uppercase tracking-wider py-2.5 px-5 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #6E1610;
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-primary:hover {
+  @apply bg-brand-primary-hover;
+  box-shadow: 0 3px 0 0 #4A0E08;
+}
+.btn-tactile-primary:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #4A0E08 !important;
+}
+
+.btn-tactile-success {
+  @apply bg-brand-secondary text-neutral-50 font-black uppercase tracking-wider py-2.5 px-5 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #314A28;
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-success:hover {
+  @apply bg-brand-secondary-hover;
+  box-shadow: 0 3px 0 0 #243A1E;
+}
+.btn-tactile-success:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #243A1E !important;
+}
+
+.btn-tactile-rose {
+  @apply bg-rose-deep text-neutral-50 font-black uppercase tracking-wider py-2.5 px-5 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #4F1320;
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-rose:hover {
+  background-color: #96153E;
+  box-shadow: 0 3px 0 0 #380F1A;
+}
+.btn-tactile-rose:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #380F1A !important;
+}
+
+.btn-tactile-amber {
+  @apply bg-burnt text-neutral-50 font-black uppercase tracking-wider py-2.5 px-5 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #6E2F12;
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-amber:hover {
+  background-color: #9C4622;
+  box-shadow: 0 3px 0 0 #53230D;
+}
+.btn-tactile-amber:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #53230D !important;
+}
+
+.btn-tactile-yellow {
+  @apply bg-gold-bright text-ink font-black uppercase tracking-wider py-2.5 px-5 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #8A6A12;
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-yellow:hover {
+  background-color: #C99A33;
+  box-shadow: 0 3px 0 0 #6E540E;
+}
+.btn-tactile-yellow:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #6E540E !important;
+}
+
+.btn-tactile-zinc {
+  @apply bg-surface-elevated text-text-primary font-black uppercase tracking-wider py-2 px-4 rounded-md select-none inline-flex items-center justify-center gap-2;
+  box-shadow: 0 3px 0 0 #0A0805;
+  border: 1px solid var(--color-border-subtle);
+  transform: translateY(0);
+  transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.08s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease;
+}
+.btn-tactile-zinc:hover {
+  background-color: #2F261D;
+  box-shadow: 0 3px 0 0 #050402;
+}
+.btn-tactile-zinc:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 #050402 !important;
+}
+
+/* ============================================================================
+   SCROLLBARS — subtle, warm-tinted. NOT a tiny purple scrollbar.
+   ============================================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0805;
+}
+::-webkit-scrollbar-thumb {
+  background: #3A2E22;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4A3A2C;
+}
+
+/* ============================================================================
+   "gradient-text-*" — REDEFINED AS SOLID COLORS.
+   Previously gradient-clipped headlines (the #1 AI gradient tell).
+   Now: solid semantic colors. Class names kept so existing JSX works.
+   ============================================================================ */
+.gradient-text-blue {
+  color: var(--color-vermillion);
+}
+.gradient-text-pink {
+  color: var(--color-gold-bright);
+}
+
+/* ============================================================================
+   "glow-*" — REDEFINED AS SUBTLE NEUTRAL DEPTH SHADOWS.
+   Previously colored glow shadows (shadow-purple-500/50 AI default).
+   Now: soft, neutral, ink-toned shadow. No color halo.
+   ============================================================================ */
+.glow-cherry {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.glow-cherry-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+.glow-pink-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================================
+   "neon-*" — REDEFINED AS SOLID-COLOR BORDERS + TEXT.
+   Previously neon glow text-shadows + colored box-shadows (AI tell).
+   Now: solid color borders with NO halo box-shadow, solid text colors.
+   ============================================================================ */
+.neon-glow-green {
+  /* no text-shadow — kept for backward-compat */
+}
+.neon-glow-cyan {
+  /* no text-shadow — kept for backward-compat */
+}
+.neon-border-green {
+  border-color: var(--color-brand-secondary) !important;
+  box-shadow: none;
+}
+.neon-border-cyan {
+  border-color: var(--color-vermillion) !important;
+  box-shadow: none;
+}
+.neon-text-green {
+  color: var(--color-brand-secondary);
+}
+.neon-text-cyan {
+  color: var(--color-vermillion);
+}
+
+/* ============================================================================
+   BRACKET CONNECTORS — solid paper-edge lines, no glow.
+   ============================================================================ */
+.bracket-connector-r {
+  position: relative;
+}
+.bracket-connector-r::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  background-color: var(--color-border-strong);
+}
+.bracket-connector-l {
+  position: relative;
+}
+.bracket-connector-l::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  background-color: var(--color-border-strong);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============================================================================
+   BADGE SHIMMER / WIGGLE / HUE — DISABLED (decorative AI tells).
+   Class selectors remain in the stylesheet so existing JSX keeps rendering,
+   but they no longer animate. Solid-color backgrounds only.
+   ============================================================================ */
+@keyframes badge-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+}
+@keyframes badge-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+}
+@keyframes subtle-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+}
+
+.animate-shimmer-bg {
+  /* was: animated multi-stop gradient. Now: solid color, no animation. */
+  background-color: var(--color-surface-elevated);
+}
+
+.group-hover\:animate-wiggle:hover, .hover\:animate-wiggle:hover {
+  /* was: infinite rotation wiggle. Now: no-op. */
+  animation: none;
+}
+
+.animate-subtle-hue {
+  /* was: infinite hue-rotate. Now: no-op. */
+  animation: none;
+}
+
+/* ============================================================================
+   "animate-float" — DISABLED. (Floating animation on hero illustration
+   is a top-3 AI tell per the design audit.)
+   ============================================================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: none;
+}
+
+/* ============================================================================
+   "animate-holo-foil" — DISABLED. (Holographic foil sweep is a decorative
+   shine effect, the same family as the gradient-clipped headline.)
+   ============================================================================ */
+@keyframes holo-slide {
+  0%, 100% { transform: translate(0, 0) rotate(45deg); }
+}
+.animate-holo-foil {
+  position: relative;
+  overflow: hidden;
+}
+.animate-holo-foil::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.group:hover .animate-holo-foil::after,
+.animate-holo-foil:hover::after {
+  opacity: 0;
+  animation: none;
+}
+
+/* ============================================================================
+   "animate-cyan-katana" / "animate-pink-diamond" / "animate-bass-headphones"
+   — DISABLED. These were "image breathing" pulse/glow animations on hero
+   illustration thumbnails. They're exactly the "Glow pulse on hero elements"
+   AI tell. Static images now.
+   ============================================================================ */
+@keyframes cyan-glow-pulse {
+  0%, 100% { filter: none; transform: rotate(0deg); }
+}
+.animate-cyan-katana {
+  animation: none;
+}
+
+@keyframes pink-neon-pulse {
+  0%, 100% { filter: none; transform: translateY(0); }
+}
+.animate-pink-diamond {
+  animation: none;
+}
+
+@keyframes audio-bass-beat {
+  0%, 100% { filter: none; transform: scale(1); }
+}
+.animate-bass-headphones {
+  animation: none;
+}
+
+/* ============================================================================
+   SKELETON LOADER — much subtler than the default AI shimmer.
+   No linear-gradient sweep, no background-size 200%, just a slow opacity
+   breath so the user sees "loading" but it doesn't read as decorative.
+   ============================================================================ */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.65; }
+}
+.skeleton {
+  background-color: var(--color-surface-elevated);
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* ============================================================================
+   VOTE CELEBRATION — these fire ONCE on a vote (state change, not
+   decoration), so they pass the "purposeful motion" carve-out. KEEP.
+   ============================================================================ */
+@keyframes celebration-flash {
+  0% { opacity: 0; }
+  20% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+@keyframes celebration-shockwave {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-shockwave-inner {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   TOURNAMENT TUG-OF-WAR — REDEFINED AS SOLID COLOR BLOCKS.
+   Previously: animated cyan-vs-rose gradient bars with pulsing box-shadow
+               glows + a gradient-clad VS knot. (Three AI tells stacked.)
+   Now: solid vermillion (side A) vs solid indigo-ink (side B) with a
+        solid gold VS knot. No animations, no gradients, no glow.
+   ============================================================================ */
+@keyframes tug-pulse-a {
+  0%, 100% { box-shadow: none; }
+}
+@keyframes tug-pulse-b {
+  0%, 100% { box-shadow: none; }
+}
+
+.tug-bar-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 2px solid var(--color-border-strong);
+  background: #0A0805;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.tug-bar-side-a {
+  background-color: var(--color-vermillion);
+  animation: none;
+}
+
+.tug-bar-side-b {
+  background-color: var(--color-indigo-bright);
+  animation: none;
+}
+
+.tug-bar-vs-knot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-gold);
+  border: 3px solid #0A0805;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display), "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #1A1410;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================================
+   CHAMPION / WINNER CELEBRATION — REDEFINED.
+   Previously: gradient-clipped gold shimmer headline + animated crown glow
+               + radial-gold card bg. (AI gradient + glow tells.)
+   Now: solid gold-bright headline (Bebas Neue, not shimmer), static
+        crown drop-shadow (no animation), solid ink card with vermillion
+        border. Still celebratory, just not a "modern AI hero".
+   ============================================================================ */
+@keyframes champion-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 184, 0, 0.35)); }
+}
+@keyframes champion-shimmer {
+  0%, 100% { background-position: 0% center; }
+}
+
+.champion-crown {
+  /* Static celebratory glow — fires on win state, not decorative. */
+  filter: drop-shadow(0 0 8px rgba(255, 184, 0, 0.35));
+  animation: none;
+}
+
+.champion-title {
+  /* Solid gold-bright color, Bebas Neue display face. No gradient, no shimmer. */
+  color: var(--color-gold-bright);
+  background: none;
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
+  font-family: var(--font-display), "Bebas Neue", sans-serif;
+  font-weight: 400;
+  animation: none;
+}
+
+.champion-card {
+  background-color: #0A0805;
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.champion-card::before {
+  /* No radial-gold glow overlay. */
+  content: none;
+}
+
+/* ============================================================================
+   "glass-*" — REDEFINED AS OPAQUE INK SURFACES WITH REAL BORDERS.
+   Previously: backdrop-blur glassmorphism cards (the canonical AI card).
+   Now: solid ink-deep surfaces with paper-edge borders and ink-toned
+        shadows. Class names kept so existing JSX keeps rendering.
+   ============================================================================ */
+.glass-panel {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.glass-panel-hover {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.glass-panel-hover:hover {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-border-strong);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.glass-header {
+  background-color: #0A0805;
+  border-bottom: 1px solid var(--color-border-subtle);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.glass-modal {
+  background-color: #0A0805;
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Fallback (was backdrop-filter support — now moot since we're opaque). */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass-panel { background-color: var(--color-surface-card); }
+  .glass-header { background-color: #0A0805; }
+  .glass-modal { background-color: #0A0805; }
+}
+
+/* ============================================================================
+   "gradient-mesh-bg" — DISABLED. (Aurora/mesh gradient animated bg is the
+   #1 AI hero background. Now: empty rule, fully transparent.)
+   ============================================================================ */
+.gradient-mesh-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: transparent;
+  animation: none;
+}
+
+/* ============================================================================
+   "holo-glare" — DISABLED. (Holographic card glare = decorative shine.)
+   ============================================================================ */
+.holo-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0;
+  border-radius: inherit;
+  z-index: 5;
+  transition: opacity 0.2s ease;
+}
+.holo-glare-active {
+  opacity: 0;
+}
+
+/* ============================================================================
+   PAPER CARD — new utility for the washi-cream surface treatment.
+   Use this when a section needs to "pop" off the dark page (hero panels,
+   stat banners, leaderboard top-3 cards). Opaque cream + ink text.
+   ============================================================================ */
+.paper-card {
+  background-color: var(--color-paper);
+  border: 1px solid var(--color-paper-edge);
+  border-radius: 8px;
+  color: var(--color-text-on-paper);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.paper-card-hover {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.paper-card-hover:hover {
+  border-color: var(--color-vermillion);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================================
+   INK RULE — a single vermillion hairline used to separate sections,
+   replacing the AI-default "thin colored top/left border on cards".
+   This is a deliberate editorial detail, not a reflexive border-image.
+   ============================================================================ */
+.ink-rule {
+  height: 2px;
+  background-color: var(--color-vermillion);
+  width: 32px;
+  display: block;
+}
+
+.ink-rule-full {
+  height: 1px;
+  background-color: var(--color-border-strong);
+  width: 100%;
+  display: block;
+}

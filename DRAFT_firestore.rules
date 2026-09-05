@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net (First Rule Block Catch-all)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Global Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return !isSignedIn() || (
+        request.auth.token != null && 
+        request.auth.token.email != null && 
+        (request.auth.token.email == "mfrimi100@gmail.com" || request.auth.token.email.toLowerCase().endsWith("@anielo.com"))
+      );
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-+:]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    // Collection: tracks
+    match /tracks/{trackId} {
+      allow read: if true;
+      allow create: if (isAdmin() || !exists(/databases/$(database)/documents/tracks/tr_1)) && isValidId(trackId);
+      allow delete: if isAdmin();
+      allow update: if isValidId(trackId) && (
+        isAdmin() || (
+          // Regular users or guests can update track matchup results
+          // Prevent changes of structurally static metadata fields
+          incoming().diff(existing()).affectedKeys().hasOnly(['elo', 'matchesPlayed', 'wins', 'losses', 'draws']) &&
+          incoming().elo is int && incoming().elo >= 100 && incoming().elo <= 4000 &&
+          incoming().matchesPlayed is int && incoming().matchesPlayed >= existing().matchesPlayed &&
+          incoming().wins is int && incoming().losses is int && incoming().draws is int
+        )
+      );
+    }
+    
+    // Collection: proposals
+    match /proposals/{proposalId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isValidId(proposalId) && (
+        incoming().id is string &&
+        incoming().type in ['add_track', 'fix_link'] &&
+        incoming().status == 'pending' &&
+        incoming().trackData is map
+      );
+    }
+    
+    // Collection: history
+    match /history/{historyId} {
+      allow read: if true;
+      allow create: if isValidId(historyId) && (
+        incoming().id is string &&
+        incoming().winnerId is string &&
+        incoming().source in ['arena', 'tournament'] &&
+        incoming().trackA is map &&
+        incoming().trackB is map
+      );
+      allow update, delete: if false;
+    }
+  }
+}

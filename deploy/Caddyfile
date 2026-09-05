@@ -1,0 +1,92 @@
+# /etc/caddy/Caddyfile — ANISYNC production reverse proxy
+#
+# Architecture A: Cloudflare Pages serves the React SPA (global CDN),
+# this Caddy serves the Express API on a subdomain like api.yourdomain.com.
+#
+# If you'd rather serve BOTH static + API from one box (Architecture C),
+# uncomment the second site block below and delete the first.
+#
+# Install Caddy on Oracle Linux 9:
+#   sudo dnf install -y caddy
+#   sudo systemctl enable --now caddy
+#   sudo cp Caddyfile /etc/caddy/Caddyfile
+#   sudo systemctl reload caddy
+#
+# Caddy auto-provisions Let's Encrypt certs — no certbot needed.
+
+# ---------------------------------------------------------------------------
+# Architecture A — API-only on a subdomain (recommended)
+# Cloudflare Pages handles yourfrontend.com, this handles api.yourfrontend.com
+# ---------------------------------------------------------------------------
+api.yourdomain.com {
+	encode gzip zstd
+
+	# Reverse proxy to the Node Express server.
+	# PM2 keeps node alive on port 3000 (see anisync.service or pm2 config).
+	reverse_proxy localhost:3000 {
+		# Pass the real client IP through (the app reads x-forwarded-for).
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	# Long timeouts — Gemini + scraping can take 30s+.
+	# Default is 30s; bump to 60s for safety.
+	transport http {
+		read_timeout 60s
+		write_timeout 60s
+	}
+
+	# Security headers (defence-in-depth — Helmet also adds these in-app).
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# CORS — allow your Cloudflare Pages origin to call this API.
+		# Replace with your actual frontend domain.
+		Access-Control-Allow-Origin "https://your-frontend.pages.dev"
+		Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+		Access-Control-Allow-Headers "Authorization, Content-Type"
+		Access-Control-Allow-Credentials "true"
+	}
+
+	# Health endpoint — used by the keep-alive pinger + Oracle idle mitigation.
+	# No auth required, fast, no DB reads.
+	@health path /health
+	handle @health {
+		reverse_proxy localhost:3000
+	}
+
+	# Static file caching for /assets/* (if you ever serve static from here).
+	@assets path /assets/*
+	handle @assets {
+		header Cache-Control "public, max-age=31536000, immutable"
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Architecture C — single-box (both static + API on one domain)
+# Uncomment this block (and delete the one above) if you want everything
+# on one VM instead of splitting frontend/backend.
+# ---------------------------------------------------------------------------
+# yourdomain.com {
+# 	encode gzip zstd
+#
+# 	# React SPA static files — built by `npm run build` and copied to /var/www/anisync
+# 	root * /var/www/anisync
+#
+# 	# API requests → Node Express on :3000
+# 	@api path /api/* /health
+# 	handle @api {
+# 		reverse_proxy localhost:3000
+# 	}
+#
+# 	# Everything else → SPA fallback (try static file, then index.html)
+# 	try_files {path} /index.html
+# 	file_server
+#
+# 	header {
+# 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+# 		X-Content-Type-Options "nosniff"
+# 	}
+# }

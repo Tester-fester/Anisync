@@ -1,0 +1,1 @@
+import{a as t}from"./vendor-icons-DEQMBWUP.js";import{al as n,aj as r}from"./index-Pdoq0UKX.js";import{a3 as u}from"./vendor-motion-DJPne5xm.js";function m(o){const e=n(()=>u(o)),{isStatic:s}=t.useContext(r);if(s){const[,a]=t.useState(o);t.useEffect(()=>e.on("change",a),[])}return e}export{m as u};

@@ -1,0 +1,72 @@
+# /etc/systemd/system/anisync.service — systemd unit for the Node Express server
+#
+# This is the alternative to PM2 — uses systemd directly (one less dependency).
+# PM2 is also fine; pick one. Systemd is the lowest-overhead option.
+#
+# Install:
+#   sudo cp anisync.service /etc/systemd/system/anisync.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable anisync
+#   sudo systemctl start anisync
+#   sudo systemctl status anisync        # verify it's running
+#   sudo journalctl -u anisync -f        # tail logs
+#
+# After deploying new code:
+#   sudo systemctl restart anisync
+
+[Unit]
+Description=ANISYNC Express API server
+After=network.target
+Wants=network-online.target
+
+[Service]
+# Run as a dedicated user (create it: sudo useradd -r -s /bin/false -d /opt/anisync anisync)
+User=anisync
+Group=anisync
+
+# Working directory = where dist/server.cjs lives after deploy
+WorkingDirectory=/opt/anisync
+
+# Start the bundled server. esbuild output is dist/server.cjs (see package.json build script).
+ExecStart=/usr/bin/node /opt/anisync/dist/server.cjs
+
+# Restart policy — auto-restart on crash, but cap to avoid thrash.
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Environment — read from a .env file on the box.
+# Put GEMINI_API_KEY, FIRESTORE_DATABASE_ID, LASTFM_API_KEY, NODE_ENV here.
+# NEVER commit this file to git.
+EnvironmentFile=/opt/anisync/.env
+
+# Hardening (defence-in-depth).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/anisync/logs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Logging — capture stdout/stderr to journald (view with `journalctl -u anisync`).
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=anisync
+
+# Resource limits — generous, Oracle VM has 12GB RAM.
+MemoryMax=4G
+CPUWeight=100
+
+[Install]
+WantedBy=multi-user.target
