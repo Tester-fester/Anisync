@@ -1423,6 +1423,54 @@ function an_embed_site_url() {
     return 'https://anisync.app';
 }
 
+// ---------------------------------------------------------------------------
+// v12.2: InnerTube trust probe (bot-wall immunity for datacenter hosts).
+//
+// Field report: on datacenter IPs (CI runners, VPS deployments, cloud hosts)
+// the InnerTube WEB_EMBEDDED_PLAYER endpoint answers EVERY request — alive
+// or dead, universally embeddable or not — with playabilityStatus=ERROR,
+// reason "This video is unavailable". That is the bot wall wearing the same
+// costume as v12.1's "region/auth shadow" class, so HOLE-1's fix backfires:
+// every track audits restricted and every repair fails verification, which
+// is precisely "the audit rerouted but some of them still don't work".
+//
+// Fix: before trusting InnerTube verdicts, probe universally-embeddable
+// reference uploads. If InnerTube cannot produce an OK playabilityStatus
+// for ANY reference from this host, its per-video verdicts are noise: skip
+// the signal entirely and let the verdict fall back to oEmbed + Data API
+// (identical to the classic "not a bot" wall handling). On a clean
+// residential network (the NAS) the references probe OK and v12.1's
+// InnerTube-is-authoritative semantics are preserved exactly.
+// ---------------------------------------------------------------------------
+
+function an_innertube_reference_ids() {
+    // Universally embeddable, long-stable uploads (Rick Astley — "dQw4w9WgXcQ",
+    // the first YouTube video — "jNQXAC9IVRw"). Both have allowed embed
+    // playability in every region for over a decade.
+    return array('dQw4w9WgXcQ', 'jNQXAC9IVRw');
+}
+
+function an_innertube_trusted() {
+    static $trusted = null;
+    if ($trusted !== null) return $trusted;
+    $cached = cache_get('innertube_trusted');
+    if (is_array($cached) && isset($cached['trusted'])) {
+        $trusted = (bool)$cached['trusted'];
+        return $trusted;
+    }
+    $refs = an_innertube_reference_ids();
+    $v = an_innertube_embed_batch($refs, 6);
+    $trusted = false;
+    foreach ($refs as $id) {
+        $st = isset($v[$id]['status']) ? $v[$id]['status'] : '';
+        if ($st === 'OK' || $st === 'LIVE_STREAM_OFFLINE') { $trusted = true; break; }
+    }
+    // 10-minute cache: a wall that appears/disappears behind NAT rotation
+    // re-probes soon; a clean host pays 2 requests per 10 minutes.
+    cache_set('innertube_trusted', array('trusted' => $trusted), 600000);
+    return $trusted;
+}
+
 function an_innertube_embed_batch($ids, $timeout = 8) {
     if (count($ids) === 0) return array();
     $requests = array();
@@ -1522,6 +1570,11 @@ function an_embed_probe($ids, $opts = array()) {
     $nocache = !empty($opts['nocache']);
     $runIt = !isset($opts['innertube']) ? true : (bool)$opts['innertube'];
     $runApi = !isset($opts['use_api']) ? true : (bool)$opts['use_api'];
+    // v12.2: if the InnerTube endpoint is bot-walled from this host (see
+    // an_innertube_trusted), its verdicts are noise for every video — skip
+    // the signal instead of letting "restricted" propagate. oEmbed + Data
+    // API still classify, and repairs become possible again.
+    if ($runIt && !an_innertube_trusted()) $runIt = false;
 
     if (!$nocache) {
         foreach ($idList as $id) {

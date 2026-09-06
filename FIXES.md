@@ -1370,3 +1370,83 @@ path) run on the NAS:
 - `node --check` clean on the patch; PHP brace/paren balance + duplicate
   scan clean on all edited files (the one `get_json_body` duplicate remains
   the known `function_exists`-guarded pair).
+
+## 21. v12.2 — fresh-install round: "the stream audit thing doesn't work on a clean checkout" (2026-09)
+
+### 21.1 Root cause 1 — `YOUTUBE_API_KEY` had no fallback define (fatal, silent)
+
+On a fresh checkout (no `public/api/config.php` — it is created by install.sh
+and never committed), `an_embed_probe()` references the `YOUTUBE_API_KEY`
+constant at its Data-API gate. Every other configurable constant
+(`GEMINI_API_KEY`, `LASTFM_API_KEY`, `APP_URL`, ...) has an
+`if (!defined(...)) define(..., '')` fallback in `lib.php` — `YOUTUBE_API_KEY`
+does not (the v6 round fixed this exact class for `GEMINI_API_KEY` and missed
+this one). The result: the moment any probe, the CLI sweeper
+(`bulk_stream_repair.php`), or `/api/verify-video` runs, PHP throws
+"Undefined constant" and the worker **dies silently** — no error body, no log
+line, an empty response. The Stream Auditor is dead on arrival on every
+install that lacks a config.php.
+
+Fix: fallback `define('YOUTUBE_API_KEY', '')` in `lib.php` (empty = Data API
+signal skipped; oEmbed + InnerTube still classify, which is exactly how
+config-less hosts already operate).
+
+### 21.2 Root cause 2 — the bot wall wears the "region shadow" costume on datacenter IPs
+
+v12.1 made InnerTube `WEB_EMBEDDED_PLAYER` playability **authoritative**
+(HOLE 1). Correct on a residential egress — but on datacenter IPs (VPS
+deployments, CI runners, cloud hosts) YouTube's bot wall answers **every**
+player request, alive or dead, with `playabilityStatus: ERROR,
+reason: "This video is unavailable"`. That is byte-identical to the
+"region/auth shadow" class v12.1 hunted, so the classifier condemns every
+video as `restricted`: audits report everything broken, and
+`an_resolve_candidates()` — which only returns probe-confirmed `ok` links —
+can never accept a replacement ("nothing above the points floor / verified").
+That is the literal "it did reroute but some of them still don't work"
+failure mode, from the other direction.
+
+Fix (`an_innertube_trusted()` in routes_meta.php): before trusting InnerTube
+verdicts, probe two universally-embeddable reference uploads
+(`dQw4w9WgXcQ`, `jNQXAC9IVRw`). If InnerTube cannot produce an OK
+playabilityStatus for ANY reference from this host, its per-video verdicts
+are noise — `an_embed_probe()` skips the signal entirely (same handling as
+the classic "not a bot" wall) and the verdict falls back to oEmbed + Data
+API. On a clean residential network the references probe OK and v12.1's
+authoritative-InnerTube semantics are preserved bit-for-bit. The trust
+verdict is cached 10 minutes in `api_cache`.
+
+### 21.3 The shipped seed library was 100 % dead — repaired with the engine itself
+
+`public/api/seed.json` (and the legacy `src/initialTracks.ts` /
+`src/seededTracks.ts`) still carried the original playlist's YouTube IDs —
+**all 49 dead at audit time** (44 oEmbed-404 dead + 5 alive-but-bot-wall-`restricted`:
+Idol, Kick Back, My Dearest, Bling-Bang-Bang-Born, Peace Sign). A fresh
+install booted into a library where nothing plays until an admin manually
+runs the auditor.
+
+Fix: ran the (now working) engine end-to-end —
+
+    php bulk_stream_repair.php            # 5 Alive | 44 Replaced & Saved | 0 Unresolved
+    php bulk_stream_repair.php --dry-run  # re-audit: 49 Alive | 0 Would replace | 0 Unresolved
+
+— then exported the repaired table back into `public/api/seed.json`
+(same format, `scripts/export_seed.py`) and synced the two `src/` seed files
+(`scripts/sync_src_tracks.py`, title-matched). Every swap is
+points-receipted and oEmbed-verified; the 5 live links were kept untouched
+(keep-if-alive policy). An independent Python oEmbed+identity sweep
+(`scripts/independent_verify.py`, a deliberately separate code path from the
+PHP engine) confirms **49/49 alive, 0 dead**.
+
+### 21.4 Tests (v12.2 round)
+
+- Isolation suite: `an_verify_embeddable_multi` / `an_innertube_embed_batch` /
+  `an_embed_feedback_recent` / `an_embed_probe` each verified standalone
+  (probe completes, verdicts cached per TTL).
+- Resolver: `an_resolve_candidates("Unravel", ...)` returns 3 verified
+  candidates with receipts (`fan upload +120, verified via oembed`) where
+  pre-fix it returned 0.
+- Full sweep: 44 repairs, re-audit 49/49 alive, independent Python check
+  49/49 alive with identity matching (3 "weak" hits are Japanese-titled
+  official uploads — correct links, ASCII-blind matcher).
+- v12.1 classifier suite untouched and still consistent
+  (`scripts/test_v12_1_classifier.py`).

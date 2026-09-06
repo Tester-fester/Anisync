@@ -6,7 +6,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "King Gnu",
     animeName: "Jujutsu Kaisen Season 2",
     type: "OP",
-    youtubeId: "Fv34w76a08A",
+    youtubeId: "ldEzCnE89a4",
     addedByUser: false,
   },
   {
@@ -22,7 +22,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Ado",
     animeName: "Spy x Family",
     type: "OP",
-    youtubeId: "vBstf_oIs-E",
+    youtubeId: "WO0Ko2A0sLM",
     addedByUser: false,
   },
   {
@@ -30,7 +30,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "OxT",
     animeName: "Overlord IV",
     type: "OP",
-    youtubeId: "l8YOnvG0s0w",
+    youtubeId: "bkHQ_rNcK7g",
     addedByUser: false,
   },
   {
@@ -38,7 +38,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Mrs. GREEN APPLE",
     animeName: "Fire Force",
     type: "OP",
-    youtubeId: "wfCcs0vL7JA",
+    youtubeId: "qfzT4yBKQ5w",
     addedByUser: false,
   },
   {
@@ -46,7 +46,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Linked Horizon",
     animeName: "Attack on Titan",
     type: "OP",
-    youtubeId: "8OkpRKvqd8g",
+    youtubeId: "Pn7dCgtwX2c",
     addedByUser: false,
   },
   {
@@ -54,7 +54,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Hiroshi Kitadani",
     animeName: "One Piece",
     type: "OP",
-    youtubeId: "9V-7mZ9lVsk",
+    youtubeId: "nqb2x_94hK0",
     addedByUser: false,
   },
   {
@@ -62,7 +62,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "MAN WITH A MISSION x milet",
     animeName: "Demon Slayer: Swordsmith Village Arc",
     type: "OP",
-    youtubeId: "788D4bZ_iIs",
+    youtubeId: "dTDzDxv-YDo",
     addedByUser: false,
   },
   {
@@ -78,7 +78,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "milet",
     animeName: "Frieren: Beyond Journey's End",
     type: "ED",
-    youtubeId: "anyJHe3sZsk",
+    youtubeId: "mZD6xxq-eyI",
     addedByUser: false,
   },
   {
@@ -86,7 +86,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "ASIAN KUNG-FU GENERATION",
     animeName: "Naruto",
     type: "OP",
-    youtubeId: "nJ6A6GC_WF4",
+    youtubeId: "slq_YcCI5xk",
     addedByUser: false,
   },
   {
@@ -94,7 +94,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "DOES",
     animeName: "Naruto Shippuden",
     type: "OP",
-    youtubeId: "X8c8_q6B9iM",
+    youtubeId: "gwOeV2umUb4",
     addedByUser: false,
   },
   {
@@ -110,7 +110,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Yutaka Yamada",
     animeName: "Tokyo Ghoul",
     type: "OST",
-    youtubeId: "zXQY6XvXfS0",
+    youtubeId: "3S1NmtWDVYk",
     addedByUser: false,
   },
   {
@@ -118,7 +118,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Konomi Suzuki",
     animeName: "No Game No Life",
     type: "OP",
-    youtubeId: "CaksNMeGS-Y",
+    youtubeId: "ZaDpKGSAPrk",
     addedByUser: false,
   },
   {
@@ -126,7 +126,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Flow",
     animeName: "Code Geass",
     type: "OP",
-    youtubeId: "cZ7zQbM3C_I",
+    youtubeId: "OLVyJl87_CI",
     addedByUser: false,
   },
   {
@@ -134,7 +134,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Satoru Kousaki",
     animeName: "The Melancholy of Haruhi Suzumiya",
     type: "OST",
-    youtubeId: "e7y1t6Z8Ksk",
+    youtubeId: "s4G7yTgV8Es",
     addedByUser: false,
   },
   {
@@ -142,7 +142,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "EGOIST",
     animeName: "Guilty Crown",
     type: "ED",
-    youtubeId: "3vV8r6kS-j4",
+    youtubeId: "rdIjGVefDuA",
     addedByUser: false,
   },
   {
@@ -150,7 +150,7 @@ export const SEEDED_TRACKS: Omit<AnimeTrack, 'id' | 'elo' | 'matchesPlayed' | 'w
     artist: "Queen Bee",
     animeName: "Oshi no Ko",
     type: "ED",
-    youtubeId: "X8H0O1l2tO8",
+    youtubeId: "z38PUYv5t4k",
     addedByUser: false,
   }
 ];

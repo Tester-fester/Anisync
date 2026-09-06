@@ -43,7 +43,7 @@ define('ANI_START_TS', isset($_SERVER['REQUEST_TIME_FLOAT']) ? (float)$_SERVER['
 // v12.1: engine stamp — /health reports it and deploy checks assert it, so
 // "did the new code actually land on the NAS?" is a one-line curl away.
 // Bump on every engine change (see FIXES.md §20).
-define('ANISYNC_ENGINE', '12.1');
+define('ANISYNC_ENGINE', '12.2');
 
 // ---------------------------------------------------------------------------
 // Config — loaded from config.php next to this file (created by install.sh).
@@ -63,6 +63,15 @@ if (!defined('APP_URL'))                define('APP_URL', '');
 if (!defined('GEMINI_API_KEY'))         define('GEMINI_API_KEY', '');
 if (!defined('GEMINI_MODEL'))           define('GEMINI_MODEL', 'gemini-2.0-flash');
 if (!defined('LASTFM_API_KEY'))         define('LASTFM_API_KEY', '');
+// FIX (v12.2): YOUTUBE_API_KEY had NO fallback define. When config.php is
+// absent (fresh checkout — config.php is created by install.sh and is NOT
+// committed), an_embed_probe() hits an undefined constant and the PHP
+// process dies SILENTLY mid-audit. This killed the Stream Auditor, the CLI
+// sweeper (bulk_stream_repair.php), and /api/verify-video on every fresh
+// install. Empty string = the Data API signal is skipped gracefully and the
+// probe falls back to oEmbed + InnerTube (exactly how config-less hosts
+// already run). Same fix class as the GEMINI_API_KEY fallback added in v6.
+if (!defined('YOUTUBE_API_KEY'))        define('YOUTUBE_API_KEY', '');
 if (!defined('GOOGLE_OAUTH_CLIENT_ID')) define('GOOGLE_OAUTH_CLIENT_ID', '');
 if (!defined('GOOGLE_OAUTH_CLIENT_SECRET')) define('GOOGLE_OAUTH_CLIENT_SECRET', '');
 if (!defined('GOOGLE_OAUTH_SCOPES'))    define('GOOGLE_OAUTH_SCOPES', 'https://www.googleapis.com/auth/youtube');

@@ -9,6 +9,20 @@ Discover, rank, and collect anime theme music in a dynamic leaderboard and ratin
 > the zero-config quick start (`./serve.sh`, or
 > `PHP_CLI_SERVER_WORKERS=8 php -S 0.0.0.0:3000 -t public dev_router.php`).
 >
+> **v12.2** — the fresh-install round (FIXES.md §21): (a)
+> `YOUTUBE_API_KEY` gained its missing fallback define — without it every
+> probe/audit/verify-video call hit an undefined-constant fatal and died
+> silently on any install without `config.php`; (b) new
+> `an_innertube_trusted()` bot-wall guard — on datacenter IPs InnerTube
+> answers every playability request with a generic ERROR ("This video is
+> unavailable"), which v12.1's authoritative classifier condemned as
+> `restricted`, so the resolver could never accept a replacement; the guard
+> probes universally-embeddable reference uploads first and skips the noisy
+> signal when the wall is up (residential/NAS semantics unchanged);
+> (c) the shipped seed library was 100 % dead links — repaired with the
+> engine itself (44 verified swaps, 5 alive kept, re-audit 49/49 alive,
+> independently double-checked) so a fresh install boots playable.
+>
 > **v12.1** — two rounds in one: (a) the v12 engine was never actually
 > deployed to the NAS (the old v4 backup code was still being served — now
 > provable in one curl: `/health` reports `"engine":"12.1"`, and
